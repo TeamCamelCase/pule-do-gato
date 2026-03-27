@@ -121,3 +121,13 @@ async def obter_analise_completa(event_id: str):
     # 9. Mescla e Retorna
     # Damos preferência aos dados da IA, mas mantemos o ao_vivo para o placar
     return {**dados_basicos, **dashboard_ia}
+
+@app.get("/jogadores/{player_id}/perfil")
+async def obter_perfil_jogador(player_id: str, nome: str = "Hulk"): 
+    # Aqui chamamos o ScoutingService que criamos
+    perfil = scouting_service.obter_perfil_jogador(player_id, nome)
+    
+    # Pedimos para a IA gerar o insight baseado no scouting
+    insight = await ia_service.gerar_insight_jogador(perfil)
+    
+    return {**perfil, "insight_ia": insight}

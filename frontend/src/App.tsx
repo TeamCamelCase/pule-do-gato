@@ -5,7 +5,7 @@ import FeedQuente from './pages/FeedQuente';
 import DetalheJogo from './pages/DetalheJogo';
 import SimuladorInterativo from './pages/SimuladorInterativo';
 import Zebras from './pages/Zebras';
-import JogadorDetalhe from './pages/JogadorDetalhe';
+import JogadorDetalhe from './pages/PerfilJogador';
 
 // Criamos um componente provisório para a rota de jogos quentes não dar erro
 function QuentesPlaceholder() {

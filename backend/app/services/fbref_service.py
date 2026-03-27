@@ -1,58 +1,71 @@
 import pandas as pd
 import os
 import re
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 class FBrefService:
     def __init__(self):
-        # Caminho para o arquivo CSV (ajuste o nome do arquivo se necessário)
-        caminho_csv = os.path.join(os.path.dirname(__file__), "../../data/players_data_light-2025_2026.csv")
+        # Caminho dinâmico para garantir que funcione em qualquer PC/Deploy
+        self.caminho_csv = os.path.join(os.path.dirname(__file__), "../../data/players_data_light-2025_2026.csv")
+        self.df = pd.DataFrame()
         
-        print("⏳ Carregando Cérebro FBref para a memória...")
+        print("⏳ Carregando Cérebro FBref (Temporada 2025/26)...")
         try:
-            # Carrega o CSV usando Pandas
-            self.df = pd.read_csv(caminho_csv)
-            # Limpa espaços em branco nos nomes das colunas
-            self.df.columns = self.df.columns.str.strip()
-            print(f"✅ Cérebro FBref carregado com sucesso! {len(self.df)} jogadores catalogados.")
-        except FileNotFoundError:
-            print(f"❌ ERRO: Arquivo CSV não encontrado em {caminho_csv}. Crie a pasta 'data' e coloque o arquivo lá.")
-            self.df = pd.DataFrame() # Cria um dataframe vazio para não quebrar o app
+            if os.path.exists(self.caminho_csv):
+                # Carrega o CSV e limpa espaços invisíveis nos nomes das colunas
+                self.df = pd.read_csv(self.caminho_csv)
+                self.df.columns = self.df.columns.str.strip()
+                print(f"✅ Cérebro FBref pronto! {len(self.df)} atletas mapeados.")
+            else:
+                print(f"⚠️ AVISO: CSV não encontrado em {self.caminho_csv}")
+        except Exception as e:
+            print(f"❌ ERRO no FBref: {e}")
 
     def buscar_destaques_time(self, nome_time: str) -> Dict[str, Any]:
         """
-        Busca os jogadores mais perigosos de um time específico com base no xG (Expected Goals)
+        Cruza os dados da rodada com o histórico da temporada 25/26.
         """
         if self.df.empty:
-            return {"sucesso": False, "erro": "Banco de dados FBref não carregado."}
+            return {"sucesso": False, "erro": "Base FBref offline."}
 
-        # Filtra os jogadores que pertencem ao time solicitado
-        # O 'str.contains' com 'case=False' ajuda a encontrar mesmo se a BetsAPI mandar o nome ligeiramente diferente
-        nome_time_seguro = re.escape(nome_time)       
-        jogadores_time = self.df[self.df['Squad'].str.contains(nome_time_seguro, case=False, na=False)]
+        try:
+            # Busca flexível para o nome do time na coluna 'Squad'
+            nome_time_seguro = re.escape(nome_time)
+            jogadores_time = self.df[self.df['Squad'].str.contains(nome_time_seguro, case=False, na=False)]
 
-        if jogadores_time.empty:
-            return {"sucesso": False, "erro": f"Time '{nome_time}' não encontrado no FBref."}
+            if jogadores_time.empty:
+                return {"sucesso": False, "erro": f"Sem dados para '{nome_time}' no FBref."}
 
-        # Ordena pelos jogadores com maior xG (Gols Esperados)
-        destaques = jogadores_time.sort_values(by='xG', ascending=False).head(3)
+            # 1. Identifica os artilheiros e jogadores mais ativos em chutes (Sh)
+            # Como o xG pode variar no 'light', usamos Gls (Gols) e Sh (Chutes)
+            destaques = jogadores_time.sort_values(by=['Gls', 'Sh'], ascending=False).head(3)
 
-        # Prepara a lista de retorno
-        top_jogadores = []
-        for _, row in destaques.iterrows():
-            top_jogadores.append({
-                "nome": row['Player'],
-                "posicao": row['Pos'],
-                "xg_total": round(float(row['xG']), 2), # Expected Goals
-                "gols_marcados": int(row['Gls']) if pd.notna(row['Gls']) else 0
-            })
+            top_jogadores = []
+            for _, row in destaques.iterrows():
+                top_jogadores.append({
+                    "nome": row['Player'],
+                    "posicao": row['Pos'],
+                    "gols": int(row['Gls']) if pd.notna(row['Gls']) else 0,
+                    "chutes": int(row['Sh']) if pd.notna(row['Sh']) else 0,
+                    "cartoes_y": int(row['CrdY']) if pd.notna(row['CrdY']) else 0
+                })
 
-        # Calcula o xG total acumulado dos 3 melhores atacantes (para cruzar com o momento do jogo)
-        xg_forca_ataque = sum(j['xg_total'] for j in top_jogadores)
+            # 2. Resumo para a IA (Tradução dos dados em insight)
+            total_gols_time = int(jogadores_time['Gls'].sum())
+            media_idade = round(float(jogadores_time['Age'].mean()), 1)
 
-        return {
-            "sucesso": True,
-            "time": nome_time,
-            "forca_ofensiva_xg": round(xg_forca_ataque, 2),
-            "top_jogadores": top_jogadores
-        }
+            return {
+                "sucesso": True,
+                "time": nome_time,
+                "gols_na_temporada": total_gols_time,
+                "media_idade": media_idade,
+                "principais_armas": top_jogadores,
+                "contexto_ia": (
+                    f"O elenco do {nome_time} tem média de {media_idade} anos e já marcou {total_gols_time} gols. "
+                    f"Destaques individuais: {', '.join([f'{j['nome']} ({j['gols']} gols)' for j in top_jogadores])}."
+                )
+            }
+
+        except Exception as e:
+            print(f"⚠️ Erro ao processar time {nome_time}: {e}")
+            return {"sucesso": False, "erro": str(e)}

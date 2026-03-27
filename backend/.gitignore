@@ -5,3 +5,5 @@ __pycache__/
 *.py[cod]
 mock_jogos.json
 .vscode/
+data/
+*.json

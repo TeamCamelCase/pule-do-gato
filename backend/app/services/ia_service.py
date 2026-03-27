@@ -94,8 +94,8 @@ class IAService:
             }},
             "feed": [ {{"id": "{random_uid}", "tipo": "ataque", "texto": "Insight", "tempo": "Agora"}} ],
             "projecao_10min": {{
-                "titulo": "MANCHETE AGRESSIVA",
-                "analise_correlacionada": "Explicação técnica",
+                "titulo": "Crie uma manchete curta e impactante baseada no jogo (Ex: PRESSÃO TOTAL DO CITY ou GOL IMINENTE)",
+                "analise_correlacionada": "Explique o porquê da manchete usando os dados de chutes e DNA tático.",
                 "valor_estimado": "85%",
                 "concorrencia_estatistica": "2.5x",
                 "insights_micro": [ 
