@@ -1,30 +1,101 @@
 import os
-import json
+import asyncio
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from app.services.bets_api import BetsAPIService
-from app.schemas.bets import RespostaJogosAoVivo
 
+# Importando os Schemas e Serviços
+from app.schemas.bets import RespostaJogosAoVivo
+from app.services.bets_api import BetsAPIService
+from app.services.fbref_service import FBrefService
+from app.services.ia_service import IAService
+from app.services.statsbomb_service import StatsbombService 
+
+# Carrega as variáveis do arquivo .env
 load_dotenv()
 
-app = FastAPI(title="Olheiro AI - O Pulo do Gato")
+# Inicializa o FastAPI
+app = FastAPI(title="Pule do Gato AI - Backend")
+
+# Libera o CORS para o Frontend (Vite na porta 5173) conseguir se conectar
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Instanciando os serviços
 bets_service = BetsAPIService()
+fbref_service = FBrefService()         
+ia_service = IAService()               
+statsbomb_service = StatsbombService() 
 
 @app.get("/jogos-ao-vivo", response_model=RespostaJogosAoVivo)
 async def listar_jogos():
-    return await bets_service.get_live_events_cleaned()
-
-@app.get("/jogos-mock", response_model=RespostaJogosAoVivo)
-async def listar_jogos_mock():
+    """Rota para a tela inicial: tenta buscar na BetsAPI, se travar, manda Mock de segurança"""
     try:
-        with open("mock_jogos.json", "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Gere o mock: python gerar_mock.py")
+        # Tenta buscar os jogos com um limite de tempo de 5 segundos
+        return await asyncio.wait_for(bets_service.get_live_events_cleaned(), timeout=5.0)
+    except asyncio.TimeoutError:
+        print("ALERTA: BetsAPI demorou muito para responder! Usando dados de contingência.")
+        # Retorna jogos falsos para o frontend não travar no (pending)
+        return {"jogos": [
+            { "id": "11654723", "time_casa": "Arsenal (Simaponika)", "time_fora": "A.Madrid (tohi4)", "placar": "0-0", "tempo": "6", "ip_casa": 1.5, "ip_fora": 0.5, "alerta": "CRÍTICO" },
+            { "id": "11654724", "time_casa": "Flamengo", "time_fora": "Vasco", "placar": "1-0", "tempo": "78", "ip_casa": 2.1, "ip_fora": 0.2, "alerta": "NORMAL" }
+        ]}
+    except Exception as e:
+        print(f"Erro na BetsAPI: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no radar de jogos.")
 
-@app.get("/jogos/{event_id}/estatisticas")
-async def obter_estatisticas(event_id: str):
-    dados = await bets_service.get_event_stats_real(event_id)
-    if not dados["sucesso"]:
-        raise HTTPException(status_code=404, detail=dados.get("erro"))
-    return dados
+@app.get("/jogos/{event_id}/analise-cruzada")
+async def obter_analise_completa(event_id: str):
+    """Rota de Raio-X: cruza BetsAPI, FBref, StatsBomb e IA para um jogo específico"""
+    
+    # 1. Busca como está o jogo AGORA e pega os nomes reais na BetsAPI
+    dados_ao_vivo = await bets_service.get_event_stats_real(event_id)
+    if not dados_ao_vivo["sucesso"]:
+        raise HTTPException(status_code=404, detail="Jogo não encontrado na BetsAPI")
+
+    # 2. Pega o nome REAL do time que a BetsAPI acabou de nos dar
+    nome_time_casa = dados_ao_vivo.get("time_casa", "Casa")
+    nome_time_fora = dados_ao_vivo.get("time_fora", "Fora")
+    
+    # 3. Busca o histórico no FBref
+    historico_casa = fbref_service.buscar_destaques_time(nome_time_casa)
+    historico_fora = fbref_service.buscar_destaques_time(nome_time_fora)
+
+    # 4. Busca o DNA Tático no StatsBomb
+    tatico_casa = statsbomb_service.analisar_zona_de_ataque(nome_time_casa)
+    tatico_fora = statsbomb_service.analisar_zona_de_ataque(nome_time_fora)
+
+    # 5. O Cálculo de Pressão Inicial (Motor Matemático)
+    probabilidade_gol = "Média"
+    if dados_ao_vivo.get("ip_casa", 0) > 1.0 and historico_casa.get("forca_ofensiva_xg", 0) > 10.0:
+        probabilidade_gol = f"ALTÍSSIMA 🚨 (Pressão do {nome_time_casa})"
+    elif dados_ao_vivo.get("ip_fora", 0) > 1.0 and historico_fora.get("forca_ofensiva_xg", 0) > 10.0:
+        probabilidade_gol = f"ALTÍSSIMA 🚨 (Pressão do {nome_time_fora})"
+
+    # 6. Monta o dicionário com toda a matemática e dados crus
+    dados_basicos = {
+        "ao_vivo": dados_ao_vivo,
+        "historico_casa_fbref": historico_casa,
+        "historico_fora_fbref": historico_fora,
+        "tatico_casa_statsbomb": tatico_casa, 
+        "tatico_fora_statsbomb": tatico_fora, 
+        "insight_matematico": probabilidade_gol
+    }
+
+    # 7. A MÁGICA: Pede para a IA gerar o JSON dinâmico com Fatores, Recomendação e Probabilidades
+    try:
+        dashboard_ia = await ia_service.gerar_dashboard_dinamico(dados_basicos)
+    except Exception as e:
+        print(f"Erro na IA, usando fallback vazio: {e}")
+        dashboard_ia = {}
+
+    # 8. Mescla os dados reais da API com os textos gerados pela IA
+    resultado_final = {**dados_basicos, **dashboard_ia}
+
+    # 9. Retorna tudo junto para o Frontend renderizar
+    return resultado_final
