@@ -87,15 +87,37 @@ async def obter_analise_completa(event_id: str):
         "insight_matematico": probabilidade_gol
     }
 
-    # 7. A MÁGICA: Pede para a IA gerar o JSON dinâmico com Fatores, Recomendação e Probabilidades
+    # 7. A MÁGICA: Pede para a IA gerar o JSON dinâmico
     try:
         dashboard_ia = await ia_service.gerar_dashboard_dinamico(dados_basicos)
     except Exception as e:
-        print(f"Erro na IA, usando fallback vazio: {e}")
+        print(f"⚠️ Erro na IA: {e}")
         dashboard_ia = {}
 
-    # 8. Mescla os dados reais da API com os textos gerados pela IA
-    resultado_final = {**dados_basicos, **dashboard_ia}
+    # 8. ESTRUTURA DE SEGURANÇA (Garante que o Front não quebre se a IA vier vazia)
+    # Se dashboard_ia estiver vazio, preenchemos com o "Modo de Espera"
+    if not dashboard_ia or "probabilidades" not in dashboard_ia:
+        dashboard_ia = {
+            "fatores_chave": ["Sincronizando telemetria tática...", "Mapeando zonas de calor", "Aguardando sinal estável"],
+            "recomendacao_principal": "Analisando Momentum do Jogo...",
+            "explicacao_detalhada": "O motor tático está processando os dados de pressão (IP) e xG para gerar um veredito.",
+            "mercados_alternativos": [],
+            "probabilidades": {
+                "gol_10min": {"valor": 0, "texto": "Calculando..."},
+                "escanteio_proximo": {"valor": 0, "texto": "Aguardando..."},
+                "cartao_iminente": {"valor": 0, "texto": "Monitorando..."},
+                "dominio_territorial": {"valor": 0, "texto": "Mapeando..."}
+            },
+            "feed": [{"id": "loading", "tipo": "alerta", "texto": "Conectando ao fluxo de dados ao vivo...", "tempo": "Agora"}],
+            "projecao_10min": {
+                "titulo": "PROCESSANDO...",
+                "analise_correlacionada": "Aguardando volume de jogo suficiente.",
+                "valor_estimado": "0%",
+                "concorrencia_estatistica": "0x",
+                "insights_micro": []
+            }
+        }
 
-    # 9. Retorna tudo junto para o Frontend renderizar
-    return resultado_final
+    # 9. Mescla e Retorna
+    # Damos preferência aos dados da IA, mas mantemos o ao_vivo para o placar
+    return {**dados_basicos, **dashboard_ia}
