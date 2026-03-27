@@ -154,3 +154,29 @@ class IAService:
         }
 
         return resultado_final
+    # No seu backend/app/services/ia_service.py
+
+    async def gerar_insight_jogador(self, perfil_jogador: dict) -> str:
+        """Gera uma dica de aposta baseada nos números REAIS do scouting."""
+        scouting = perfil_jogador.get('scouting', {})
+        
+        prompt = f"""
+        Analise os dados deste jogador para o jogo de hoje:
+        Nome: {scouting.get('nome')}
+        Gols na Temporada: {scouting.get('gols_na_temporada')}
+        Cartões Amarelos: {scouting.get('cartoes_amarelos')}
+        Média de Chutes ao Gol/90min: {scouting.get('chutes_no_gol_media')}
+
+        Como um Trader Profissional, dê uma dica de aposta CURTA (1 linha) para este jogador.
+        Ex: 'Sugestão: Entrada em +0.5 chutes ao gol devido à média de {scouting.get('chutes_no_gol_media')}.'
+        Seja agressivo e use os números fornecidos.
+        """
+        
+        if self.gemini_model:
+            try:
+                response = await self.gemini_model.generate_content_async(prompt)
+                return response.text.strip()
+            except:
+                return "Análise tática indisponível."
+        return "💡 Dica: Over 0.5 Finalizações para este perfil."
+    

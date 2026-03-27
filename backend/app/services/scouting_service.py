@@ -5,45 +5,47 @@ from typing import Dict, Any
 
 class ScoutingService:
     def __init__(self, fbref_service):
-        self.fbref_service = fbref_service # Recebe o serviço do FBref
+        self.fbref_service = fbref_service
         print("🕵️ Motor de Scouting Individual Online.")
 
     def obter_perfil_jogador(self, player_id: str, nome_jogador: str):
-        """
-        Cruza o histórico da StatsBomb com a temporada 25/26 (FBref) para a IA.
-        """
         try:
-            # 1. Busca histórica longa (Últimas Copas/Ligas) via API
-            # Para Hackathon, vamos buscar em uma competição aberta forte
-            # events = sb.events(player_id=player_id) # Se tivermos o ID do Statsbomb
+            # Busca na Base FBref 2025/26 através do serviço que já carrega o CSV
+            # O player_id aqui vindo da URL (ex: 'Brenden Aaronson') é usado na busca
+            resultado_fbref = self.fbref_service.buscar_destaques_time(nome_jogador)
 
-            # Como é Hackathon e não temos o ID do Statsbomb de todos, 
-            # focamos o scouting nos dados da TEMPORADA ATUAL (FBref).
+            # Se a busca geral do time falhou ou o jogador não foi filtrado, 
+            # vamos fazer uma busca direta pelo nome no DataFrame do fbref_service
+            df = self.fbref_service.df
             
-            # 2. Busca na Base FBref 2025/26 (Seu CSV)
-            dados_temporada = self.fbref_service.buscar_jogador_por_nome(nome_jogador)
+            # Busca flexível pelo nome do jogador
+            player_row = df[df['Player'].str.contains(nome_jogador, case=False, na=False)]
 
-            if not dados_temporada["sucesso"]:
-                return {"sucesso": False, "erro": "Dados do jogador não mapeados na base atual."}
+            if player_row.empty:
+                return {
+                    "sucesso": False, 
+                    "erro": f"Jogador '{nome_jogador}' não encontrado na base 2025/26."
+                }
 
-            player_data = dados_temporada["dados"]
+            # Pega a primeira linha encontrada
+            p = player_row.iloc[0]
 
-            # 3. Lógica de Scouting Individual (Dados crus para a IA)
-            scouting_bruto = {
-                "nome": player_data['Player'],
-                "time": player_data['Squad'],
-                "gols_na_temporada": int(player_data['Gls']),
-                "assistencias": int(player_data['Ast']),
-                "chutes_no_gol_media": round(float(player_data['Sh'] or 0) / float(player_data['MP'] or 1), 2),
-                "cartoes_amarelos": int(player_data['CrdY']),
-                "estilo": "Finalizador Ativo" if player_data['Sh'] > 20 else "Construtor"
-            }
-
+            # Mapeamento exato das colunas do seu CSV
             return {
                 "sucesso": True,
-                "player_id": player_id,
-                "scouting": scouting_bruto
+                "scouting": {
+                    "nome": p['Player'],
+                    "time": p['Squad'],
+                    "posicao": p['Pos'],
+                    "idade": int(p['Age']) if pd.notna(p['Age']) else 0,
+                    "gols_na_temporada": int(p['Gls']) if pd.notna(p['Gls']) else 0,
+                    "assistencias": int(p['Ast']) if pd.notna(p['Ast']) else 0,
+                    "cartoes_amarelos": int(p['CrdY']) if pd.notna(p['CrdY']) else 0,
+                    "chutes_no_gol_media": round(float(p['SoT/90']), 2) if pd.notna(p['SoT/90']) else 0,
+                    "xg_total": round(float(p['G-PK']), 2) if 'G-PK' in p else 0 # Usando G-PK como proxy se xG não existir
+                }
             }
 
         except Exception as e:
+            print(f"Erro no Scouting: {e}")
             return {"sucesso": False, "erro": str(e)}

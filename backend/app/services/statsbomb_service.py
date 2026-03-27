@@ -32,7 +32,7 @@ class StatsbombService:
                     
                     # Filtra se o time jogou (Case insensitive para evitar erros de digitação)
                     jogos_do_time = partidas[
-                        (partidas['home_team'].str.contains(nome_time, case=False, na=False)) | 
+                        (partidas['home_team'].str.contains(nome_time, case=False, na=False, regex=False)) | 
                         (partidas['away_team'].str.contains(nome_time, case=False, na=False))
                     ]
 

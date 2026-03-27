@@ -1,5 +1,6 @@
 import os
 import asyncio
+from app.services.scouting_service import ScoutingService
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -30,7 +31,8 @@ app.add_middleware(
 bets_service = BetsAPIService()
 fbref_service = FBrefService()         
 ia_service = IAService()               
-statsbomb_service = StatsbombService() 
+statsbomb_service = StatsbombService()
+scouting_service = ScoutingService(fbref_service)
 
 @app.get("/jogos-ao-vivo", response_model=RespostaJogosAoVivo)
 async def listar_jogos():

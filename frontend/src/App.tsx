@@ -23,7 +23,7 @@ function App() {
           <Route path="/jogo/:id" element={<DetalheJogo />} />
           <Route path="/simular" element={<SimuladorInterativo />} />
           <Route path="/zebras" element={<Zebras />} />
-          <Route path="/jogador/:id" element={<JogadorDetalhe />} />
+          <Route path="/jogadores/:id" element={<JogadorDetalhe />} />
         </Route>
       </Routes>
     </Router>
