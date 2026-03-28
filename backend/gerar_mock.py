@@ -8,7 +8,7 @@ load_dotenv()
 
 async def coletar_dados_ativos():
     service = BetsAPIService()
-    print("🚀 Olheiro AI: Iniciando coleta ativa de estatísticas reais...")
+    print("🚀 Lucky: Iniciando coleta ativa de estatísticas reais...")
     
     try:
         lista_inicial = await service.get_live_events_cleaned()
