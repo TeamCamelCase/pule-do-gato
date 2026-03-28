@@ -6,7 +6,7 @@ const Sidebar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="sticky left-0 top-20 w-80 min-h-screen border-r border-[#272727] dark-bg">
+    <div className="fixed top-20 left-0 w-80 h-[calc(100vh-80px)] border-r border-[#272727] dark-bg">
       {/* HEADER */}
       <div className="flex flex-col items-start px-5 pt-12">
         <h1 className="text-white text-[18px] font-bold">

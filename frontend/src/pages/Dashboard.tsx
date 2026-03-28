@@ -31,8 +31,12 @@ const Dashboard = () => {
             <div className="col-span-1 md:col-span-2 border border-white/10 rounded-2xl p-6 flex flex-col justify-between relative">
               <div>
                 <div className="flex">
-                  <div className="flex mr-3 mt-2 justify-center w-13 h-13 rounded-full bg-[#9CFF931A] border border-[#9CFF9333]">
-                    <img src="/premium.svg" alt="" className="w-6" />
+                  <div className="flex mr-3 mt-1 md:mt-2.5 lg:mt-2.5 justify-center md:w-13 md:h-13 lg:w-13 lg:h-13 w-12 h-10 rounded-full bg-[#9CFF931A] border border-[#9CFF9333]">
+                    <img
+                      src="/premium.svg"
+                      alt=""
+                      className="w-5 ml-0.5 md:ml-0 md:w-6 lg:w-6"
+                    />
                   </div>
 
                   <div>

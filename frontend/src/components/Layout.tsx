@@ -86,7 +86,9 @@ export default function Layout() {
         <div className="hidden lg:block">
           <Sidebar />
         </div>
-        <Outlet />
+        <div className="flex-1 lg:ml-80">
+          <Outlet />
+        </div>
       </main>
 
       {/* === BOTTOM NAV MOBILE (Escondido no Desktop, Visível no Celular) === */}
