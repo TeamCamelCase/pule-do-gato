@@ -21,6 +21,8 @@ function App() {
           <Route path="/simular" element={<SimuladorInterativo />} />
           <Route path="/zebras" element={<Zebras />} />
           <Route path="/jogadores/:id" element={<JogadorDetalhe />} />
+          <Route path="/perfil" element={<JogadorDetalhe />} />
+          <Route path="/jogador/:id" element={<JogadorDetalhe />} />
         </Route>
       </Routes>
     </Router>

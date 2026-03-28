@@ -6,6 +6,7 @@ import {
   Crosshair,
   MessageSquare,
   Play,
+  ShieldAlert,
   Target,
   TrendingUp,
   X,
@@ -212,82 +213,96 @@ export default function DetalheJogo() {
             </div>
           </div>
 
-          {/* RADAR DE 10 MINUTOS COM INSIGHTS MICRO */}
-          <div className="bg-[#121212] border border-dark-border rounded-2xl p-6">
-            <h2 className="flex items-center gap-2 text-white font-bold mb-6 italic uppercase text-sm">
-              <Activity size={18} className="text-neon" /> Radar de 10 Minutos
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-black p-5 rounded-2xl border border-dark-border border-l-4 border-l-neon">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                    Prob. de Gol (10')
-                  </span>
-                  <span className="text-neon font-heading text-4xl">
-                    {gol10.valor}%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-800 h-2.5 rounded-full mb-3 shadow-inner">
-                  <div
-                    className="bg-neon h-2.5 rounded-full shadow-[0_0_15px_#ccff00]"
-                    style={{ width: `${gol10.valor}%` }}
-                  />
-                </div>
-                {/* Texto direto e instrutivo da IA */}
-                <p className="text-[11px] text-gray-300 italic leading-snug bg-white/5 p-2 rounded-lg border border-white/5">
-                  {gol10.texto}
-                </p>
+          {/* RADAR DE 10 MINUTOS (Termômetro de Inércia) */}
+          <div className="bg-[#121212] border border-dark-border rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="flex items-center gap-2 text-white font-bold italic uppercase text-xs tracking-widest">
+                <Activity size={18} className="text-neon" /> 
+                Telemetria: Últimos 10 Minutos
+              </h2>
+              <span className="text-[9px] bg-white/5 px-2 py-1 rounded text-gray-500 font-bold uppercase">
+                Inércia de Campo
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Coluna de Barras */}
+              <div className="space-y-6">
+                {[
+                  { label: "Pressão Ofensiva", val: dados.termometro_10min?.pressao_ofensiva || 0, color: "bg-neon" },
+                  { label: "Domínio Territorial", val: dados.termometro_10min?.dominio_territorial || 0, color: "bg-blue-500" },
+                  { label: "Intensidade de Duelos", val: dados.termometro_10min?.intensidade_duelos || 0, color: "bg-purple-500" }
+                ].map((item, i) => (
+                  <div key={i} className="group">
+                    <div className="flex justify-between items-end mb-2">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter group-hover:text-white transition-colors">
+                        {item.label}
+                      </span>
+                      <span className="text-white font-heading text-lg leading-none">
+                        {item.val}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-800/50 h-1.5 rounded-full overflow-hidden border border-white/5">
+                      <div
+                        className={`${item.color} h-full rounded-full shadow-[0_0_10px_rgba(204,255,0,0.3)] transition-all duration-1000 ease-out`}
+                        style={{ width: `${item.val}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className="flex flex-col gap-2.5">
-                {insightsMicro.length > 0 ? (
-                  insightsMicro.map((insight: any, i: number) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5 hover:border-neon/30 transition-all group"
-                    >
-                      <div className="text-neon p-2 bg-neon/10 rounded-lg group-hover:bg-neon/20 transition-colors">
-                        {insight.icon === "zap" && <Zap size={16} />}
-                        {insight.icon === "target" && <Target size={16} />}
-                        {insight.icon === "corner" && (
-                          <TrendingUp size={16} className="rotate-90" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase font-black text-gray-500 leading-none mb-1 tracking-widest">
-                          {insight.label}
-                        </p>
-                        <p className="text-xs text-white font-semibold leading-tight">
-                          {insight.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-600 text-[10px] italic border border-dashed border-dark-border rounded-xl">
-                    Aguardando micro-dados...
-                  </div>
-                )}
+              {/* Coluna de Resumo do Lucky */}
+              <div className="relative bg-black/40 border border-white/5 rounded-xl p-5 flex flex-col justify-center overflow-hidden">
+                <div className="absolute top-0 right-0 p-2 opacity-10">
+                  <TrendingUp size={40} className="text-neon" />
+                </div>
+                <p className="text-[9px] text-neon font-black uppercase mb-2 tracking-widest">
+                  Veredito da Inércia
+                </p>
+                <p className="text-gray-300 text-sm italic leading-relaxed relative z-10">
+                  "{dados.termometro_10min?.resumo_tatico || "O motor está processando o volume de jogo recente..."}"
+                </p>
               </div>
             </div>
           </div>
 
           {/* INTELIGÊNCIA DE CAMPO */}
-          <div className="relative bg-[#0a0a0c] border border-dark-border rounded-2xl p-7">
-            <h3 className="text-white font-black tracking-widest text-[10px] uppercase flex items-center gap-2 mb-6 border-b border-dark-border pb-4">
-              <Crosshair size={16} className="text-neon" /> Inteligência de
-              Campo (Diagnósticos)
-            </h3>
-            <ul className="space-y-4">
+          <div className="relative bg-[#0a0a0c] border border-dark-border rounded-2xl p-7 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center justify-between mb-8 border-b border-dark-border pb-4">
+              <h3 className="text-white font-black tracking-widest text-[11px] uppercase flex items-center gap-2">
+                <Crosshair size={18} className="text-neon" /> 
+                Inteligência de Campo <span className="text-gray-600">| Diagnósticos do Lucky</span>
+              </h3>
+              <div className="flex gap-1">
+                <div className="w-1 h-1 rounded-full bg-neon animate-ping"></div>
+                <div className="w-1 h-1 rounded-full bg-neon opacity-50"></div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {fatores.map((fator: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-4 group">
-                  <div className="min-w-1.5 h-1.5 rounded-full bg-neon mt-2 shadow-[0_0_8px_#ccff00]" />
-                  <span className="text-gray-300 text-sm leading-relaxed group-hover:text-white transition-colors">
-                    {fator}
-                  </span>
-                </li>
+                <div 
+                  key={idx} 
+                  className="bg-[#121212] border border-white/5 p-4 rounded-xl hover:border-neon/30 transition-all group"
+                >
+                  <div className="flex flex-col gap-3">
+                    {/* O split aqui assume que você enviou "Emoji Título: Descrição" do backend */}
+                    <div className="text-neon font-bold text-xs uppercase tracking-tighter group-hover:scale-105 transition-transform origin-left">
+                      {fator.split(':')[0]}
+                    </div>
+                    <p className="text-gray-300 text-sm leading-snug font-medium italic">
+                      {fator.split(':')[1] || fator}
+                    </p>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
+            
+            {/* Rodapé tático interno */}
+            <div className="mt-6 flex items-center gap-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest opacity-50">
+              <ShieldAlert size={12} /> Dados processados em baixa latência
+            </div>
           </div>
         </div>
 
@@ -334,7 +349,7 @@ export default function DetalheJogo() {
           onClick={() => setShowExplicacaoModal(true)}
           className="flex-1 md:flex-none bg-dark-card border border-dark-border text-white font-bold px-8 py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-800 transition-all active:scale-95 text-sm"
         >
-          <MessageSquare size={18} /> Raciocínio IA
+          <MessageSquare size={18} /> Lucky explica
         </button>
         <button
           onClick={handleSimular}
@@ -345,7 +360,7 @@ export default function DetalheJogo() {
             <span className="animate-pulse">Cruzando Dados...</span>
           ) : (
             <>
-              <Play size={20} fill="currentColor" /> Simular Desfecho
+              <Play size={20} fill="currentColor" /> Simular próx. 10min
             </>
           )}
         </button>

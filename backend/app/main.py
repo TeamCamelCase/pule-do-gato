@@ -21,7 +21,7 @@ app = FastAPI(title="Pule do Gato AI - Backend")
 # Libera o CORS para o Frontend (Vite na porta 5173) conseguir se conectar
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["https://seu-frontend.vercel.app", "http://localhost:5173"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -133,3 +133,13 @@ async def obter_perfil_jogador(player_id: str, nome: str = "Hulk"):
     insight = await ia_service.gerar_insight_jogador(perfil)
     
     return {**perfil, "insight_ia": insight}
+
+@app.get("/jogos/zebras")
+async def buscar_zebras_reais():
+   
+    analise = await ia_service.analisar_contexto_zebra(
+        mandante="Náutico", 
+        visitante="Sport", 
+        placar="1-1"
+    )
+    return analise

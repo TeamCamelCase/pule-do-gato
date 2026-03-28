@@ -78,34 +78,43 @@ class IAService:
         # 3. CONSTRUÇÃO DO PROMPT ESTRUTURADO (Garante que a IA não invente chaves)
         random_uid = str(uuid.uuid4())[:8]
         prompt = f"""
-        Analise os dados desta partida de futebol ao vivo: {dados_jogo}
-        
-        Como um Trader Esportivo Profissional, retorne ESTRITAMENTE um JSON com esta estrutura:
-        {{
-            "fatores_chave": ["Análise 1", "Análise 2", "Análise 3"],
-            "recomendacao_principal": "Sugestão clara (ex: Over 0.5 HT)",
-            "explicacao_detalhada": "Raciocínio tático simplificado",
-            "mercados_alternativos": [ {{"mercado": "Gols", "tip": "Dica", "porque": "Motivo"}} ],
-            "probabilidades": {{
-                "gol_10min": {{"valor": 80, "texto": "Ex: Pressão alta"}},
-                "escanteio_proximo": {{"valor": 60, "texto": "Ex: Bolas alçadas"}},
-                "cartao_iminente": {{"valor": 30, "texto": "Ex: Jogo limpo"}},
-                "dominio_territorial": {{"valor": 70, "texto": "Ex: Posse no ataque"}}
-            }},
-            "feed": [ {{"id": "{random_uid}", "tipo": "ataque", "texto": "Insight", "tempo": "Agora"}} ],
-            "projecao_10min": {{
-                "titulo": "Crie uma manchete curta e impactante baseada no jogo (Ex: PRESSÃO TOTAL DO CITY ou GOL IMINENTE)",
-                "analise_correlacionada": "Explique o porquê da manchete usando os dados de chutes e DNA tático.",
-                "valor_estimado": "85%",
-                "concorrencia_estatistica": "2.5x",
-                "insights_micro": [ 
-                    {{"icon": "zap", "label": "Pressão", "desc": "Texto curto"}},
-                    {{"icon": "target", "label": "Chutes", "desc": "Texto curto"}}
-                ]
+            Analise os dados desta partida: {dados_jogo}
+
+            Como o 'Lucky', retorne ESTRITAMENTE um JSON com esta estrutura:
+            {{
+                "termometro_10min": {{
+                    "pressao_ofensiva": 0-100,
+                    "dominio_territorial": 0-100,
+                    "intensidade_duelos": 0-100,
+                    "resumo_tatico": "Uma frase sarcástica e técnica do Lucky sobre os últimos 10 min"
+                }},
+                "fatores_chave": [
+                    "🔥 Pressão: [Descreva o volume ofensivo em 1 frase]",
+                    "🎯 Espaço: [Onde está a brecha na defesa adversária]",
+                    "🛡️ Risco: [O que pode estragar a aposta agora]"
+                ],
+                "recomendacao_principal": "Sugestão direta (ex: Over 0.5 HT)",
+                "explicacao_detalhada": "Raciocínio sarcástico e técnico",
+                "mercados_alternativos": [ {{"mercado": "Gols", "tip": "Dica", "porque": "Motivo"}} ],
+                "probabilidades": {{
+                    "gol_10min": {{"valor": 80, "texto": "Ex: Blitz total"}},
+                    "escanteio_proximo": {{"valor": 60, "texto": "Ex: Bolas alçadas"}},
+                    "cartao_iminente": {{"valor": 30, "texto": "Ex: Jogo limpo"}},
+                    "dominio_territorial": {{"valor": 70, "texto": "Ex: Posse no ataque"}}
+                }},
+                "feed": [ {{"id": "{random_uid}", "tipo": "ataque", "texto": "Insight", "tempo": "Agora"}} ],
+                "projecao_10min": {{
+                    "titulo": "Manchete impactante",
+                    "analise_correlacionada": "Explicação técnica",
+                    "valor_estimado": "85%",
+                    "concorrencia_estatistica": "2.5x",
+                    "insights_micro": [ 
+                        {{"icon": "zap", "label": "Pressão", "desc": "Texto curto"}}
+                    ]
+                }}
             }}
-        }}
-        Responda APENAS o objeto JSON.
-        """
+            Responda APENAS o JSON.
+            """
 
         resultado_final = None
 
@@ -179,4 +188,22 @@ class IAService:
             except:
                 return "Análise tática indisponível."
         return "💡 Dica: Over 0.5 Finalizações para este perfil."
+    
+    async def analisar_contexto_zebra(self, mandante: str, visitante: str, placar: str):
+        # DICA PARA O PITCH: Aqui você pode usar o Google Search API ou Tavily
+        # para buscar notícias recentes. Para o código do hackathon, simularemos
+        # a entrada desse contexto no prompt.
+
+        prompt = f"""
+        Analise o contexto histórico e de notícias para o jogo {mandante} x {visitante}.
+        O placar atual é {placar}.
+        
+        Considere fatores como:
+        - Tabus históricos (ex: "time X sempre perde final").
+        - Clima da torcida e pressão psicológica.
+        - Notícias de última hora (desfalques).
+        
+        Retorne um JSON com a probabilidade real de zebra e um "Insight do Lucky" sarcástico 
+        que explique o porquê (ex: 'O Náutico tem o DNA do empate em finais, a odd 4.2 do Sport é presente').
+        """
     
