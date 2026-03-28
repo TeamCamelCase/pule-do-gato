@@ -136,10 +136,20 @@ async def obter_perfil_jogador(player_id: str, nome: str = "Hulk"):
 
 @app.get("/jogos/zebras")
 async def buscar_zebras_reais():
-   
-    analise = await ia_service.analisar_contexto_zebra(
-        mandante="Náutico", 
-        visitante="Sport", 
-        placar="1-1"
-    )
-    return analise
+    # 1. Busca os jogos que estão rolando de verdade na API de apostas
+    jogos_ao_vivo = await bets_service.get_live_matches() 
+    
+    zebras_detectadas = []
+    
+    for jogo in jogos_ao_vivo:
+        # Lógica simples: se o time com IP menor está ganhando ou empatando
+        if jogo['ip_zebra'] > jogo['ip_favorito']:
+            # 2. Só aqui a IA entra para dar o "Pulo do Gato" tático
+            analise = await ia_service.analisar_contexto_zebra(
+                mandante=jogo['home_team'], 
+                visitante=jogo['away_team'], 
+                placar=jogo['score']
+            )
+            zebras_detectadas.append(analise)
+            
+    return zebras_detectadas
