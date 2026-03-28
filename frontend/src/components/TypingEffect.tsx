@@ -1,70 +1,55 @@
 import { useEffect, useState } from "react";
 
-// Texto que vai ficar trocando na tela
 const words = ["MAGIA.", "TECNOLOGIA."];
 
 export default function TypingEffect() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentSubstring, setCurrentSubstring] = useState("");
   const [isErasing, setIsErasing] = useState(false);
-  const [typingSpeed, setTypingSpeed] = useState(150); // Velocidade de digitação
+  const [delay, setDelay] = useState(120);
 
   useEffect(() => {
-    // Lógica da Máquina de Escrever (Digitar -> Apagar -> Trocar de palavra -> Repetir)
+    const currentWord = words[currentWordIndex];
+
     const timeout = setTimeout(() => {
-      const currentFullWord = words[currentWordIndex];
-
       if (!isErasing) {
-        // --- DIGITANDO ---
-        setCurrentSubstring(
-          currentFullWord.substring(0, currentSubstring.length + 1)
-        );
-        setTypingSpeed(150); // Velocidade normal
+        const next = currentWord.substring(0, currentSubstring.length + 1);
+        setCurrentSubstring(next);
 
-        if (currentSubstring.length === currentFullWord.length) {
-          // Terminou de digitar a palavra inteira, aguarda 2 segundos e começa a apagar
+        if (next === currentWord) {
+          setDelay(1200);
           setIsErasing(true);
-          setTypingSpeed(2000);
+        } else {
+          setDelay(100);
         }
       } else {
-        // --- APAGANDO ---
-        setCurrentSubstring(
-          currentFullWord.substring(0, currentSubstring.length - 1)
-        );
-        setTypingSpeed(80); // Velocidade mais rápida ao apagar
+        const next = currentWord.substring(0, currentSubstring.length - 1);
+        setCurrentSubstring(next);
 
-        if (currentSubstring.length === 0) {
-          // Terminou de apagar, troca de palavra e começa a digitar a próxima
+        if (next === "") {
           setIsErasing(false);
-          setTypingSpeed(500);
           setCurrentWordIndex((prev) => (prev + 1) % words.length);
+          setDelay(400);
+        } else {
+          setDelay(50);
         }
       }
-    }, typingSpeed);
+    }, delay);
 
     return () => clearTimeout(timeout);
-  }, [currentSubstring, isErasing, typingSpeed, currentWordIndex]);
+  }, [currentSubstring, isErasing, currentWordIndex, delay]);
 
   return (
-    // PARENTE RELATIVO PARA MANTER O LAYOUT ESTÁVEL
-    // 1. Trocamos h-[1.1em] por h-auto para maior flexibilidade vertical.
-    // 2. Trocamos inline-block por inline e align-baseline para alinhar perfeitamente com o texto estático no mobile.
-    <span className="relative inline h-auto overflow-hidden align-baseline">
-      {/* O HACK DE ESTABILIDADE (Renderizamos a palavra mais longa invisível) */}
-      <span
-        className="invisible select-none h-0 pointer-events-none"
-        aria-hidden="true"
-      >
-        TECNOLOGIA.
-      </span>
-
-      {/* O TEXTO QUE DIGITA REALMENTE, POSICIONADO ABSOLUTO */}
-      {/* 3. APLICAMOS A CLASSE .text-blur-fade-right para o efeito de blur no final. */}
-      <span className="absolute top-0 left-0 text-neon inline-flex items-center gap-1 drop-shadow-[1px_1px_3px_rgba(204,255,0,0.5)] text-blur-fade-right">
-        {currentSubstring}
-        {/* Cursor piscando */}
-        <span className="w-[3px] h-[0.8em] bg-neon rounded-full animate-blink-cursor" />
-      </span>
+    <span
+      className="inline font-bold"
+      style={{
+        color: "#9cff93",
+        textShadow:
+          "0 0 6px rgba(156,255,147,0.8), 0 0 12px rgba(156,255,147,0.6)",
+      }}
+    >
+      {currentSubstring}
+      <span className="ml-1 animate-pulse">|</span>
     </span>
   );
 }

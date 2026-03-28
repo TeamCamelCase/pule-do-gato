@@ -8,23 +8,14 @@ import JogadorDetalhe from "./pages/PerfilJogador";
 import SimuladorInterativo from "./pages/SimuladorInterativo";
 import Zebras from "./pages/Zebras";
 
-// Criamos um componente provisório para a rota de jogos quentes não dar erro
-function QuentesPlaceholder() {
-  return (
-    <div className="p-8 text-center text-neon text-2xl">
-      🔥 Feed de Jogos em breve...
-    </div>
-  );
-}
-
 function App() {
   return (
     <Router>
       <Routes>
         {/* O Layout envolve todas as telas dentro dele */}
-        <Route path="/home" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Dashboard />} />
           <Route path="/quentes" element={<FeedQuente />} />
           <Route path="/jogo/:id" element={<DetalheJogo />} />
           <Route path="/simular" element={<SimuladorInterativo />} />

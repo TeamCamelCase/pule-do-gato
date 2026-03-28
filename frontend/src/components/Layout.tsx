@@ -1,6 +1,7 @@
-import { Flame, Home, Ticket, User, Zap } from "lucide-react";
+import { Flame, Home, Ticket, User } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import logoImg from "../assets/logo.svg";
+import Sidebar from "./Sidebar";
 
 export default function Layout() {
   const location = useLocation();
@@ -19,6 +20,8 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen font-sans flex flex-col bg-dark-bg">
+      {/* SIDEBAR */}
+
       {/* HEADER (Com Menu Desktop integrado) */}
       <header className="h-20 px-4 md:px-12 flex items-center justify-between sticky top-0 bg-dark-bg/95 backdrop-blur z-40 border-b border-dark-border/50">
         {/* Logo à esquerda (Clica para ir pra Home) */}
@@ -79,7 +82,10 @@ export default function Layout() {
       </header>
 
       {/* ÁREA CENTRAL */}
-      <main className="flex-1 w-full max-w-7xl mx-auto flex flex-col">
+      <main className="flex-1 w-full mx-auto flex pb-24 md:pb-0">
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
         <Outlet />
       </main>
 
@@ -111,11 +117,11 @@ export default function Layout() {
             to="/simular"
             className="relative -top-6 flex flex-col items-center transition-transform hover:scale-105 active:scale-95"
           >
-            <div className="bg-neon p-4 rounded-full shadow-[0_0_20px_rgba(204,255,0,0.3)] text-black">
-              <Zap size={28} fill="currentColor" />
+            <div className="bg-neon w-16 h-16 flex justify-center rounded-full shadow-[0_0_20px_rgba(204,255,0,0.3)] text-black">
+              <img src="/cat-mascot.png" alt="" className="w-14 mt-1 ml-0.5" />
             </div>
             <span className="text-[10px] font-medium text-gray-500 mt-1">
-              Assistente
+              Lucky IA
             </span>
           </Link>
 

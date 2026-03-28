@@ -67,7 +67,7 @@ export default function FeedQuente() {
   }, []);
 
   return (
-    <div className="flex flex-col w-full min-h-[calc(100dvh-80px)] px-4 py-6 md:py-10 pb-28 md:pb-10 animate-fade-in-up">
+    <div className="flex flex-col align-middle w-full min-h-[calc(100dvh-80px)] px-4 py-6 md:py-10 pb-28 md:pb-10 animate-fade-in-up md:w-300 lg:w-300 m-auto">
       {/* Cabeçalho da Página */}
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -171,11 +171,12 @@ export default function FeedQuente() {
           ))}
         </div>
       )}
+      {/* BOTÃO FLUTUANTE */}
       <Link
         to="/simular"
-        className="absolute flex justify-center w-20 h-20 bottom-10 right-10 ml-4 align-middle items-center gap-2 text-sm font-bold text-black bg-neon rounded-full hover:bg-[#63fa4f] transition-transform uppercase tracking-widest shadow-[0_0_15px_rgba(204,255,0,0.2)]"
+        className="fixed hidden bottom-6 right-6 md:bottom-10 md:right-10 md:flex lg:flex justify-center items-center w-16 h-16 md:w-20 md:h-20 text-black bg-neon rounded-full hover:bg-[#63fa4f] transition uppercase shadow-[0_0_15px_rgba(204,255,0,0.2)]"
       >
-        <img src="cat-mascot.png" className="w-16 mt-1 ml-0.5" alt="" />
+        <img src="cat-mascot.png" className="w-12 md:w-16" alt="" />
       </Link>
     </div>
   );

@@ -1,23 +1,13 @@
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
 
 import { partidas, tendencias } from "../data/mock";
 
 const Dashboard = () => {
   return (
-    <div className="flex text-white dark-bg min-h-screen">
-      {/* SIDEBAR */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
-
+    <div className="flex flex-col align-middle w-full text-white dark-bg min-h-screen">
       {/* ÁREA DIREITA */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* HEADER FIXO */}
-        <div className="sticky top-0 z-50 dark-bg">
-          <Header />
-        </div>
 
         {/* CONTEÚDO */}
         <div className="overflow-y-auto flex-1 p-6 md:p-10 flex flex-col gap-8 w-full max-w-[1400px] mx-auto">
@@ -223,7 +213,7 @@ const Dashboard = () => {
       {/* BOTÃO FLUTUANTE */}
       <Link
         to="/simular"
-        className="fixed bottom-6 right-6 md:bottom-10 md:right-10 flex justify-center items-center w-16 h-16 md:w-20 md:h-20 text-black bg-neon rounded-full hover:bg-[#63fa4f] transition uppercase shadow-[0_0_15px_rgba(204,255,0,0.2)]"
+        className="fixed hidden bottom-6 right-6 md:bottom-10 md:right-10 md:flex lg:flex justify-center items-center w-16 h-16 md:w-20 md:h-20 text-black bg-neon rounded-full hover:bg-[#63fa4f] transition uppercase shadow-[0_0_15px_rgba(204,255,0,0.2)]"
       >
         <img src="cat-mascot.png" className="w-12 md:w-16" alt="" />
       </Link>
