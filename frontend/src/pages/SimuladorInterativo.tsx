@@ -1,4 +1,4 @@
-import { ArrowRight, Bot } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -33,8 +33,8 @@ export default function SimuladorInterativo() {
     <div className="flex flex-col w-full max-w-2xl mx-auto min-h-[calc(100dvh-80px)] px-4 mt-6 md:mt-10 pb-32 md:pb-16 animate-fade-in-up">
       {/* Cabeçalho do Chat */}
       <div className="flex items-center gap-3 border-b border-dark-border pb-5 mb-8">
-        <div className="bg-neon/10 p-3 rounded-2xl border border-neon/30 text-neon animate-pulse shadow-[0_0_15px_rgba(204,255,0,0.15)]">
-          <Bot size={32} />
+        <div className="bg-neon/10 rounded-2xl border border-neon/30 text-neon animate-pulse shadow-[0_0_10px_rgba(204,255,0,0.15)]">
+          <img src="cat-mascot.png" className="w-16" alt="" />
         </div>
         <div>
           <h2 className="text-2xl font-bold font-heading tracking-wide uppercase">
@@ -52,7 +52,7 @@ export default function SimuladorInterativo() {
         {/* --- MENSAGEM 1: O esporte (Sempre visível) --- */}
         <div className="flex flex-col items-start gap-3 w-full animate-fade-in-up">
           <div className="flex items-center gap-2">
-            <Bot size={18} className="text-neon" />
+            {/* <Bot size={18} className="text-neon" /> */}
             <span className="font-bold text-sm text-gray-300">Lucky</span>
           </div>
           <div className="bg-dark-card p-4 rounded-xl rounded-bl-none border border-dark-border text-white text-base max-w-[85%]">
@@ -94,7 +94,7 @@ export default function SimuladorInterativo() {
         {passo >= 1 && esporte && (
           <div className="flex flex-col items-start gap-3 w-full animate-fade-in-up delay-100">
             <div className="flex items-center gap-2">
-              <Bot size={18} className="text-neon" />
+              {/* <Bot size={18} className="text-neon" /> */}
               <span className="font-bold text-sm text-gray-300">Lucky</span>
             </div>
             <div className="bg-dark-card p-4 rounded-xl rounded-bl-none border border-dark-border text-white text-base max-w-[85%]">
@@ -128,7 +128,7 @@ export default function SimuladorInterativo() {
         {passo >= 2 && liga && (
           <div className="flex flex-col items-start gap-3 w-full animate-fade-in-up delay-200 mb-8 pb-8 border-b border-dark-border">
             <div className="flex items-center gap-2">
-              <Bot size={18} className="text-neon" />
+              {/*  <Bot size={18} className="text-neon" /> */}
               <span className="font-bold text-sm text-gray-300">Lucky</span>
             </div>
             <div className="bg-dark-card p-4 rounded-xl rounded-bl-none border border-dark-border text-white text-base max-w-[85%] relative overflow-hidden">
