@@ -62,7 +62,7 @@ class FBrefService:
                 "principais_armas": top_jogadores,
                 "contexto_ia": (
                     f"O elenco do {nome_time} tem média de {media_idade} anos e já marcou {total_gols_time} gols. "
-                    f"Destaques individuais: {', '.join([f'{j["nome"]} ({j["gols"]} gols)' for j in top_jogadores])}."
+                    f"Destaques individuais: {', '.join([f'{j['nome']} ({j['gols']} gols)' for j in top_jogadores])}."
                 )
             }
 
