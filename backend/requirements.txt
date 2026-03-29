@@ -29,3 +29,5 @@ uvicorn==0.42.0
 statsbombpy
 pandas
 requests
+google-generativeai
+groq
