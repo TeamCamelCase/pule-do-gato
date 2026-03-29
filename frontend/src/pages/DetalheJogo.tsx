@@ -111,8 +111,8 @@ export default function DetalheJogo() {
   // ==========================================
   // MAPEAMENTO SEGURO (Prevenção de Tela Branca)
   // ==========================================
-  const probs = dados?.probabilidades || {};
-  const gol10 = probs.gol_10min || { valor: 0, texto: "Analisando..." };
+  /*  const probs = dados?.probabilidades || {}; */
+  /*   const gol10 = probs.gol_10min || { valor: 0, texto: "Analisando..." }; */
 
   const feedAtivo = dados?.feed || [];
   const fatores = dados?.fatores_chave || ["Iniciando telemetria..."];
@@ -122,7 +122,7 @@ export default function DetalheJogo() {
     dados?.explicacao_detalhada ||
     dados?.explicacao ||
     "O motor está processando o volume de jogo atual.";
-  const insightsMicro = dados?.projecao_10min?.insights_micro || [];
+  /*   const insightsMicro = dados?.projecao_10min?.insights_micro || []; */
 
   return (
     <div className="flex flex-col w-full max-w-6xl mx-auto min-h-screen px-4 mt-4 md:mt-8 pb-32 animate-fade-in-up">
@@ -216,7 +216,7 @@ export default function DetalheJogo() {
           <div className="bg-[#121212] border border-dark-border rounded-2xl p-6 shadow-lg">
             <div className="flex items-center justify-between mb-8">
               <h2 className="flex items-center gap-2 text-white font-bold italic uppercase text-xs tracking-widest">
-                <Activity size={18} className="text-neon" /> 
+                <Activity size={18} className="text-neon" />
                 Telemetria: Últimos 10 Minutos
               </h2>
               <span className="text-[9px] bg-white/5 px-2 py-1 rounded text-gray-500 font-bold uppercase">
@@ -228,9 +228,21 @@ export default function DetalheJogo() {
               {/* Coluna de Barras */}
               <div className="space-y-6">
                 {[
-                  { label: "Pressão Ofensiva", val: dados.termometro_10min?.pressao_ofensiva || 0, color: "bg-neon" },
-                  { label: "Domínio Territorial", val: dados.termometro_10min?.dominio_territorial || 0, color: "bg-blue-500" },
-                  { label: "Intensidade de Duelos", val: dados.termometro_10min?.intensidade_duelos || 0, color: "bg-purple-500" }
+                  {
+                    label: "Pressão Ofensiva",
+                    val: dados.termometro_10min?.pressao_ofensiva || 0,
+                    color: "bg-neon",
+                  },
+                  {
+                    label: "Domínio Territorial",
+                    val: dados.termometro_10min?.dominio_territorial || 0,
+                    color: "bg-blue-500",
+                  },
+                  {
+                    label: "Intensidade de Duelos",
+                    val: dados.termometro_10min?.intensidade_duelos || 0,
+                    color: "bg-purple-500",
+                  },
                 ].map((item, i) => (
                   <div key={i} className="group">
                     <div className="flex justify-between items-end mb-2">
@@ -260,7 +272,10 @@ export default function DetalheJogo() {
                   Veredito da Inércia
                 </p>
                 <p className="text-gray-300 text-sm italic leading-relaxed relative z-10">
-                  "{dados.termometro_10min?.resumo_tatico || "O motor está processando o volume de jogo recente..."}"
+                  "
+                  {dados.termometro_10min?.resumo_tatico ||
+                    "O motor está processando o volume de jogo recente..."}
+                  "
                 </p>
               </div>
             </div>
@@ -270,8 +285,9 @@ export default function DetalheJogo() {
           <div className="relative bg-[#0a0a0c] border border-dark-border rounded-2xl p-7 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
             <div className="flex items-center justify-between mb-8 border-b border-dark-border pb-4">
               <h3 className="text-white font-black tracking-widest text-[11px] uppercase flex items-center gap-2">
-                <Crosshair size={18} className="text-neon" /> 
-                Inteligência de Campo <span className="text-gray-600">| Diagnósticos do Lucky</span>
+                <Crosshair size={18} className="text-neon" />
+                Inteligência de Campo{" "}
+                <span className="text-gray-600">| Diagnósticos do Lucky</span>
               </h3>
               <div className="flex gap-1">
                 <div className="w-1 h-1 rounded-full bg-neon animate-ping"></div>
@@ -281,23 +297,23 @@ export default function DetalheJogo() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {fatores.map((fator: string, idx: number) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="bg-[#121212] border border-white/5 p-4 rounded-xl hover:border-neon/30 transition-all group"
                 >
                   <div className="flex flex-col gap-3">
                     {/* O split aqui assume que você enviou "Emoji Título: Descrição" do backend */}
                     <div className="text-neon font-bold text-xs uppercase tracking-tighter group-hover:scale-105 transition-transform origin-left">
-                      {fator.split(':')[0]}
+                      {fator.split(":")[0]}
                     </div>
                     <p className="text-gray-300 text-sm leading-snug font-medium italic">
-                      {fator.split(':')[1] || fator}
+                      {fator.split(":")[1] || fator}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {/* Rodapé tático interno */}
             <div className="mt-6 flex items-center gap-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest opacity-50">
               <ShieldAlert size={12} /> Dados processados em baixa latência
