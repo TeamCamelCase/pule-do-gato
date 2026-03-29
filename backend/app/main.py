@@ -21,7 +21,7 @@ app = FastAPI(title="Pule do Gato AI - Backend")
 # Libera o CORS para o Frontend (Vite na porta 5173) conseguir se conectar
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://pule-do-gato.vercel.app", "http://localhost:5173"], 
+    allow_origins=["https://pule-do-gato.vercel.app","https://pule-do-gato-kappa.vercel.app", "http://localhost:5173"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
