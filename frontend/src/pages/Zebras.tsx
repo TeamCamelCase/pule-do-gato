@@ -34,23 +34,27 @@ export default function Zebras() {
   useEffect(() => {
     async function carregarZebras() {
       try {
-        const response = await fetch("http://localhost:8000/jogos/zebras");
-        if (!response.ok) throw new Error("Erro na API");
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+        const response = await fetch(`${apiUrl}/jogos/zebras`);
+        
+        if (!response.ok) throw new Error("Erro na API ao buscar zebras");
+        
         const data = await response.json();
         
-        // Garante que se a API falhar ou vier vazia, mantenha um array
         setJogos(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Erro ao buscar zebras reais:", error);
-        setJogos([]); // Fallback para não quebrar a tela
+        
+        setJogos([]); 
       } finally {
         setLoading(false);
       }
     }
     carregarZebras();
     
-    // Refresh a cada 30 segundos para pegar mudanças no placar/notícias
     const interval = setInterval(carregarZebras, 30000);
+    
     return () => clearInterval(interval);
   }, []);
 

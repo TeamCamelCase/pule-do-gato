@@ -29,9 +29,8 @@ export default function DetalheJogo() {
   // Função de busca com lógica de histórico para o Feed
   const buscarDadosReais = useCallback(async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/jogos/${id}/analise-cruzada`
-      );
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const response = await fetch(`${apiUrl}/jogos/${id}/analise-cruzada`);
       if (!response.ok) throw new Error("API não retornou dados.");
       const newData = await response.json();
       console.log("📦 DADOS RECEBIDOS DA IA:", newData);

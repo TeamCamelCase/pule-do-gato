@@ -24,7 +24,8 @@ export default function FeedQuente() {
     const buscarJogos = async () => {
       try {
         // Ajuste a URL para a rota correta do seu backend
-        const response = await fetch("http://localhost:8000/jogos-ao-vivo");
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const response = await fetch(`${apiUrl}/jogos-ao-vivo`);
         if (!response.ok) throw new Error("Erro ao buscar jogos");
 
         const data = await response.json();

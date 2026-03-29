@@ -21,11 +21,18 @@ export default function JogadorDetalhe() {
   useEffect(() => {
     async function carregarPerfil() {
       try {
-        // Rota que criamos no backend para buscar no CSV + IA
+        // 1. Definição da URL dinâmica para suportar o deploy
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         const response = await fetch(
-          `http://localhost:8000/jogadores/${id}/perfil?nome=${id}`
+          `${apiUrl}/jogadores/${id}/perfil?nome=${id}`
         );
+
+        if (!response.ok) {
+          throw new Error("Erro ao carregar dados do jogador");
+        }
+
         const data = await response.json();
+        
         setJogador(data);
       } catch (error) {
         console.error("Erro ao carregar scouting:", error);
@@ -33,7 +40,10 @@ export default function JogadorDetalhe() {
         setLoading(false);
       }
     }
-    carregarPerfil();
+
+    if (id) {
+      carregarPerfil();
+    }
   }, [id]);
 
   if (loading || !jogador) {
